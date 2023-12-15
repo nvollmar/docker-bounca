@@ -17,7 +17,7 @@ docker network create net-bounca
 docker run --rm -d --name postgres --network=net-bounca --network-alias=postgres.net-bounca -e POSTGRES_USER=bounca -e POSTGRES_PASSWORD=bounca postgres:16.1-alpine
 
 # Start BounCA
-docker run -p 8080:80 --rm -dit -e BOUNCA_FQDN=localhost --name bounca --network=net-bounca -e DB_PWD=bounca aluveitie/bounca:latest
+docker run -p 8080:8080 --rm -dit -e BOUNCA_FQDN=localhost --name bounca --network=net-bounca -e DB_PWD=bounca aluveitie/bounca:latest
 ```
 
 Access it on http://localhost:8080 and sign up to create your admin user

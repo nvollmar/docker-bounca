@@ -7,6 +7,8 @@ FROM nginx:1.25.3-bookworm
 ENV DOCROOT=/srv/www/bounca \
     LOGDIR=/var/log/bounca \
     ETCDIR=/etc/bounca \
+    UWSGIDIR=/etc/uwsgi \
+    NGINXDIR=/etc/nginx \
     BOUNCA_USER=www-data \
     BOUNCA_GROUP=www-data
 
@@ -28,7 +30,9 @@ RUN mkdir -pv ${LOGDIR} ${DOCROOT} ${ETCDIR} /etc/nginx/sites-available /etc/ngi
   && ln -s /etc/nginx/sites-available/bounca.conf /etc/nginx/sites-enabled/bounca.conf \
   && cp -v ${DOCROOT}/etc/uwsgi/bounca.ini /etc/uwsgi/apps-available/bounca.ini \
   && ln -s /etc/uwsgi/apps-available/bounca.ini /etc/uwsgi/apps-enabled/bounca.ini \
-  && chown -R ${BOUNCA_USER}:${BOUNCA_GROUP} ${LOGDIR} ${DOCROOT} ${ETCDIR}
+  && chown -R ${BOUNCA_USER}:${BOUNCA_GROUP} ${LOGDIR} ${DOCROOT} ${ETCDIR} ${UWSGIDIR} ${NGINXDIR} \
+  && chown ${BOUNCA_USER}:${BOUNCA_GROUP} /var/run /var/cache/nginx
+
 
 RUN sed -i '/psycopg2-binary/d' ${DOCROOT}/requirements.txt
 
