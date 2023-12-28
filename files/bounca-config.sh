@@ -77,7 +77,7 @@ if [ -n "${DJANGO_SUPERUSER_PASSWORD}" ]; then
   python3 manage.py createsuperuser \
     --noinput \
     --username "${DJANGO_SUPERUSER_NAME:-superuser}" \
-    --email "${DJANGO_SUPERUSER_EMAIL:-superuser@example.com}"
+    --email "${DJANGO_SUPERUSER_EMAIL:-superuser@example.com}" >/dev/null || true
 fi
 
 # Remove the home parameter which was set to use virtual env in default configuration
