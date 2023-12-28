@@ -1,6 +1,8 @@
 FROM nginx:latest
 
-ENV BOUNCA_VERSION=102483429 \
+ARG BOUNCA_FILE_VERSION=102483429
+
+ENV BOUNCA_FILE_VERSION=${BOUNCA_FILE_VERSION} \
     DOCROOT=/srv/www/bounca \
     LOGDIR=/var/log/bounca \
     ETCDIR=/etc/bounca \
@@ -16,7 +18,7 @@ RUN apt-get update && \
     gettext netcat-traditional nginx python3 python3-dev python3-setuptools \
     python-is-python3 uwsgi uwsgi-plugin-python3 virtualenv python3-virtualenv \
     python3-pip wget ca-certificates openssl python3-psycopg2 net-tools && \
-    wget -P /srv/www --content-disposition https://gitlab.com/bounca/bounca/-/package_files/${BOUNCA_VERSION}/download && \
+    wget -P /srv/www --content-disposition https://gitlab.com/bounca/bounca/-/package_files/${BOUNCA_FILE_VERSION}/download && \
     tar -xzvf /srv/www/bounca.tar.gz -C /srv/www && \
     rm /srv/www/bounca.tar.gz && \
     mkdir -pv ${LOGDIR} ${DOCROOT} ${ETCDIR} /etc/nginx/sites-available /etc/nginx/sites-enabled && \
