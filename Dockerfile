@@ -29,7 +29,7 @@ RUN apt-get update && \
     cp -v ${DOCROOT}/etc/uwsgi/bounca.ini /etc/uwsgi/apps-available/bounca.ini && \
     ln -s /etc/uwsgi/apps-available/bounca.ini /etc/uwsgi/apps-enabled/bounca.ini && \
     chown -R ${BOUNCA_USER}:${BOUNCA_GROUP} ${LOGDIR} ${DOCROOT} ${ETCDIR} ${UWSGIDIR} \
-      ${NGINXDIR} /var/run /var/cache/nginx && \
+      ${NGINXDIR} /var/run /var/cache/nginx /var/log/uwsgi && \
     sed -i '/psycopg2-binary/d' ${DOCROOT}/requirements.txt && \
     chmod +x /docker-entrypoint.d/bounca-config.sh && \
     ln -sfT /dev/stdout "/var/log/nginx/bounca-access.log" && \
