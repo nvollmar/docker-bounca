@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 set -euo pipefail
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
 CONFIG_FILE=/etc/bounca/services.yaml
@@ -11,13 +12,13 @@ if [[ ! -f ${CONFIG_FILE} ]]; then
     echo "...generating random BOUNCA_DJANGO_SECRET."
   fi
 
-  echo "
+  cat <<EOF >${CONFIG_FILE}
 psql:
-  dbname: ${DB_NAME:-bounca}
-  username: ${DB_USER:-bounca}
-  password: ${DB_PWD:-bounca}
-  host: ${DB_HOST:-postgres}
-  port: ${DB_PORT:-5432}
+  dbname: ${POSTGRES_DB:-bounca}
+  username: ${POSTGRES_USER:-bounca}
+  password: ${POSTGRES_PASSWORD:-bounca}
+  host: ${POSTGRES_HOST:-postgres}
+  port: ${POSTGRES_PORT:-5432}
 
 admin:
   enabled: True
@@ -35,31 +36,32 @@ django:
 mail:
   host: ${SMTP_HOST:-localhost}
   port: ${SMTP_PORT:-25}
-  #username: ${SMTP_USERNAME:-}
-  #password: ${SMTP_PASSWORD:-}
+  username: ${SMTP_USER:-}
+  password: ${SMTP_PASSWORD:-}
   connection: ${SMTP_CONNECTION:-none}
-  admin: ${ADMIN_MAIL:-admin@example.com}
-  from: ${FROM_MAIL:-no-reply@example.com}
+  admin: ${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
+  from: ${FROM_EMAIL:-no-reply@example.com}
 
 certificate-engine:
-  # allowed values: ed25519, rsa
-  # Ed25519 is a a modern, fast and safe key algorithm, however not supported by all operating systems, like MacOS.
-  # Keep the 'rsa' option if unsure. Root and intermediate keys are 4096 bits, client and server certificates
-  # use 2048 bits keys.
   key_algorithm: rsa
 
 registration:
-  # allowed values: mandatory, optional, off
-  email_verification: off" > ${CONFIG_FILE}
+  email_verification: off
+EOF
 fi
 
-# netcat test PSQL
-if [ "$(nc -zv "${DB_HOST:-postgres}" "${DB_PORT:-5432}"; echo $?)" -ne 0 ]; then
-  echo "${DB_HOST:-postgres} PSQL server is not reachable on port ${DB_PORT:-5432}"
-  exit 1
-fi
+# wait for postgres
+while true; do
+  if nc -zv "${POSTGRES_HOST:-postgres}" "${POSTGRES_PORT:-5432}" > /dev/null; then
+    echo "${POSTGRES_HOST:-postgres} PSQL server is reachable on port ${POSTGRES_PORT:-5432}. Let's go!"
+    break
+  else
+    echo "${POSTGRES_HOST:-postgres} PSQL server is not reachable on port ${POSTGRES_PORT:-5432}. Waiting..."
+    sleep 3
+  fi
+done
 
-cd "${DOCROOT}" && pwd
+# cd "${DOCROOT}"
 python3 manage.py migrate
 python3 manage.py collectstatic
 
@@ -68,6 +70,14 @@ if [ -z "${BOUNCA_FQDN+x}" ]; then
   exit 1
 elif [[ -n "${BOUNCA_FQDN}" ]]; then
   python3 manage.py site "${BOUNCA_FQDN}"
+fi
+
+# Create Django Superuser
+if [ -n "${DJANGO_SUPERUSER_PASSWORD}" ]; then
+  python3 manage.py createsuperuser \
+    --noinput \
+    --username "${DJANGO_SUPERUSER_NAME:-superuser}" \
+    --email "${DJANGO_SUPERUSER_EMAIL:-superuser@example.com}" >/dev/null || true
 fi
 
 # Remove the home parameter which was set to use virtual env in default configuration

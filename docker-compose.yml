@@ -1,0 +1,45 @@
+---
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    networks:
+      bounca:
+        aliases:
+          - postgres
+    volumes:
+      - <PATH_TO_POSTGRES_DATA>:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+      - POSTGRES_USER=<POSTGRES_USER>
+      - POSTGRES_DB=<POSTGRES_DB>
+
+  bounca:
+    image: bounca:latest
+    networks:
+      - bounca
+      - default
+    ports:
+      - 8080:8080
+    environment:
+      - BOUNCA_FQDN=<FQDN>
+      - BOUNCA_DJANGO_SECRET=<DJANGO_SECRET>
+      - POSTGRES_HOST=<POSTGRES_HOST>
+      - POSTGRES_PORT=5432
+      - POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+      - POSTGRES_USER=<POSTGRES_USER>
+      - POSTGRES_DB=<POSTGRES_DB>
+      - DJANGO_SUPERUSER_NAME=<SUPERUSER_NAME>
+      - DJANGO_SUPERUSER_PASSWORD=<SUPERUSER_PASSWORD>
+      - DJANGO_SUPERUSER_EMAIL=<SUPERUSER_EMAIL>
+      - SMTP_HOST=<SMTP_HOST>
+      - SMTP_PORT=<SMTP_PORT>
+      - SMTP_USER=<SMTP_USER>
+      - SMTP_PASSWORD=<SMTP_PASSWORD>
+      - SMTP_CONNECTION=<SMTP_CONNECTION>
+      - FROM_EMAIL=<FROM_EMAIL>
+
+networks:
+  bounca:
+    internal: true

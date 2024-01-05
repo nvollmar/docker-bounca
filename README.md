@@ -20,6 +20,12 @@ docker run --rm -d --name postgres --network=net-bounca --network-alias=postgres
 docker run -p 8080:8080 --rm -dit -e BOUNCA_FQDN=localhost --name bounca --network=net-bounca -e DB_PWD=bounca aluveitie/bounca:latest
 ```
 
+### Using docker-compose
+
+```
+docker-compose up -d
+```
+
 Access it on http://localhost:8080 and sign up to create your admin user
 
 ## How to build yourself
@@ -28,7 +34,7 @@ Access it on http://localhost:8080 and sign up to create your admin user
 # Multi platform to your prefered registry
 docker buildx build --platform=linux/arm64,linux/amd64 --file Dockerfile --push .
 
-# Single platform to run in local docker 
+# Single platform to run in local docker
 docker buildx build --platform=linux/arm64 --file Dockerfile -t bounca:latest --load .
 ```
 
