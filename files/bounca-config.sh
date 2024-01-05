@@ -73,7 +73,7 @@ elif [[ -n "${BOUNCA_FQDN}" ]]; then
 fi
 
 # Create Django Superuser
-if [ -n "${DJANGO_SUPERUSER_PASSWORD}" ]; then
+if [ -n "${DJANGO_SUPERUSER_PASSWORD-}" ]; then
   python3 manage.py createsuperuser \
     --noinput \
     --username "${DJANGO_SUPERUSER_NAME:-superuser}" \
