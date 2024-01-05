@@ -28,6 +28,10 @@ docker-compose up -d
 
 Access it on http://localhost:8080 and sign up to create your admin user
 
+### Using kubernetes
+
+To deploy in Kubernetes see the [deployment.yml](deployment.yml) example.
+
 ## How to build yourself
 
 ```
