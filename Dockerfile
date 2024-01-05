@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM nginxinc/nginx-unprivileged:latest
 
 ARG BOUNCA_FILE_VERSION=102483429
 
@@ -8,17 +8,19 @@ ENV BOUNCA_FILE_VERSION=${BOUNCA_FILE_VERSION} \
     ETCDIR=/etc/bounca \
     UWSGIDIR=/etc/uwsgi \
     NGINXDIR=/etc/nginx \
-    BOUNCA_USER=www-data \
-    BOUNCA_GROUP=www-data
+    BOUNCA_USER=nginx \
+    BOUNCA_GROUP=nginx
 
 COPY files/bounca-config.sh /docker-entrypoint.d/bounca-config.sh
+
+USER root
 
 RUN apt-get update && \
     apt-get install -qy \
       gettext netcat-traditional nginx python3 python3-dev python3-setuptools \
       python-is-python3 uwsgi uwsgi-plugin-python3 python3-pip \
       wget ca-certificates openssl python3-psycopg2 && \
-    mkdir -pv ${LOGDIR} ${DOCROOT} ${ETCDIR} /etc/nginx/sites-available /etc/nginx/sites-enabled && \
+    mkdir -pv ${LOGDIR} ${DOCROOT} ${ETCDIR} /etc/nginx/sites-available /etc/nginx/sites-enabled /run/uwsgi/app/bounca && \
     wget -P /tmp --content-disposition https://gitlab.com/bounca/bounca/-/package_files/${BOUNCA_FILE_VERSION}/download && \
     tar -xzvf /tmp/bounca.tar.gz -C /srv/www && \
     pip install --no-cache-dir --break-system-packages -r ${DOCROOT}/requirements.txt && \
@@ -28,14 +30,17 @@ RUN apt-get update && \
     ln -s /etc/nginx/sites-available/bounca.conf /etc/nginx/sites-enabled/bounca.conf && \
     cp -v ${DOCROOT}/etc/uwsgi/bounca.ini /etc/uwsgi/apps-available/bounca.ini && \
     ln -s /etc/uwsgi/apps-available/bounca.ini /etc/uwsgi/apps-enabled/bounca.ini && \
-    chown -R ${BOUNCA_USER}:${BOUNCA_GROUP} ${LOGDIR} ${DOCROOT} ${ETCDIR} ${UWSGIDIR} \
-      ${NGINXDIR} /var/run /var/cache/nginx /var/log/uwsgi && \
+    sed -i 's/www-data/nginx/g' /etc/uwsgi/apps-available/bounca.ini && \
+    chown -R ${BOUNCA_USER}:${BOUNCA_GROUP} ${LOGDIR} ${DOCROOT} ${ETCDIR} ${NGINXDIR} ${UWSGIDIR} \
+      /var/run /var/cache/nginx /var/log/uwsgi /run/uwsgi && \
     sed -i '/psycopg2-binary/d' ${DOCROOT}/requirements.txt && \
     chmod +x /docker-entrypoint.d/bounca-config.sh && \
     ln -sfT /dev/stdout "/var/log/nginx/bounca-access.log" && \
     ln -sfT /dev/stdout "/var/log/nginx/bounca-error.log" && \
     apt-get clean && \
     rm -rfv /tmp/* /var/tmp/* /var/lib/apt/lists/* ${DOCROOT}/.git
+
+USER nginx
 
 WORKDIR ${DOCROOT}
 

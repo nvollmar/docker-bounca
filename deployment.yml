@@ -70,11 +70,11 @@
                       - ALL
                 resources:
                   limits:
-                    cpu: 400m
-                    memory: 192Mi
-                  requests:
                     cpu: 100m
-                    memory: 96Mi
+                    memory: 128Mi
+                  requests:
+                    cpu: 10m
+                    memory: 32Mi
                 ports:
                   - containerPort: 5432
                 lifecycle:
@@ -137,7 +137,8 @@
                         name: db-credentials
                         key: password
                 securityContext:
-                  runAsUser: 33
+                  runAsUser: 101
+                  runAsGroup: 101
                   runAsRoot: false
                   allowPrivilegeEscalation: false
                   readOnlyRootFilesystem: false
@@ -150,7 +151,7 @@
                     cpu: 400m
                     memory: 384Mi
                   requests:
-                    cpu: 100m
+                    cpu: 50m
                     memory: 128Mi
                 ports:
                   - containerPort: 8080

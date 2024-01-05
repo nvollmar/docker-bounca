@@ -92,5 +92,4 @@ nginx -t
 
 # Start uwsgi
 mkdir -pv /run/uwsgi/app/bounca
-chown -R www-data:www-data /srv/www/bounca /run/uwsgi
 uwsgi --ini /etc/uwsgi/apps-enabled/bounca.ini --die-on-term &
