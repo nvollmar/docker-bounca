@@ -63,7 +63,7 @@ done
 
 # cd "${DOCROOT}"
 python3 manage.py migrate
-python3 manage.py collectstatic
+python3 manage.py collectstatic --noinput
 
 if [ -z "${BOUNCA_FQDN+x}" ]; then
   echo "BOUNCA_FQDN variable should be defined but is not, exiting..." >/dev/stderr
