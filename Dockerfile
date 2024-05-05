@@ -28,6 +28,7 @@ RUN apt-get update && \
     ln -s /etc/nginx/sites-enabled /etc/nginx/conf.d && \
     cp -v ${DOCROOT}/etc/nginx/bounca /etc/nginx/sites-available/bounca.conf && \
     ln -s /etc/nginx/sites-available/bounca.conf /etc/nginx/sites-enabled/bounca.conf && \
+    sed -i 's#80#8080#g' /etc/nginx/sites-available/bounca.conf && \ # Set non-default port
     cp -v ${DOCROOT}/etc/uwsgi/bounca.ini /etc/uwsgi/apps-available/bounca.ini && \
     ln -s /etc/uwsgi/apps-available/bounca.ini /etc/uwsgi/apps-enabled/bounca.ini && \
     sed -i 's/www-data/nginx/g' /etc/uwsgi/apps-available/bounca.ini && \

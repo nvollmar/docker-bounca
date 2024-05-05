@@ -84,9 +84,6 @@ fi
 sed -i '/^home/d' /etc/uwsgi/apps-enabled/bounca.ini
 sed -i 's#chmod-socket = 700#chmod-socket = 777#g' /etc/uwsgi/apps-enabled/bounca.ini
 
-# Set non-default port
-sed -i 's#80#8080#g' /etc/nginx/sites-available/bounca.conf
-
 # Check Nginx config
 nginx -t
 
