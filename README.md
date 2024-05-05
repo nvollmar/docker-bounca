@@ -42,6 +42,14 @@ docker buildx build --platform=linux/arm64,linux/amd64 --file Dockerfile --push 
 docker buildx build --platform=linux/arm64 --file Dockerfile -t bounca:latest --load .
 ```
 
+Publish with Podman
+```
+# Multi platform to your prefered registry
+podman manifest create bounca:latest
+podman buildx build --platform=linux/arm64,linux/amd64 --file Dockerfile --manifest bounca:latest .
+podman manifest push bounca:latest docker://your-registry.io/bounca:latest
+```
+
 ## Sources
 - https://github.com/repleo/bounca/
 - https://github.com/repleo/docker-bounca
