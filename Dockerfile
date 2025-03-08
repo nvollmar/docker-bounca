@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged:latest
+FROM nginxinc/nginx-unprivileged:1.27-bookworm
 
 ARG BOUNCA_FILE_VERSION=111380104
 
